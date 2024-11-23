@@ -1,0 +1,5 @@
+# Package requirments. Add packages as necessary.
+
+numpy
+matplotlib
+opencv-pyplot
