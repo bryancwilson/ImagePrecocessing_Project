@@ -3,3 +3,6 @@
 numpy
 matplotlib
 opencv-pyplot
+
+# Necessary GUI Libraries
+PyQt5
