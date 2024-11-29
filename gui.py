@@ -122,7 +122,9 @@ class Template(QWidget):
         super().__init__()
 
         # set the overall horizontal layout
-        layout = QHBoxLayout(self)
+        layout = QVBoxLayout(self)
+
+        im_layout = QHBoxLayout()
 
         # set inner vertical layouts
         left_layout = QVBoxLayout()
@@ -136,26 +138,25 @@ class Template(QWidget):
         self.pic_right_exists = False
 
         # initialize toggles and labels
-        btn1 = QPushButton('Browse For Left Image')
+        btn1 = QPushButton('Browse For Foreground')
         btn1.clicked.connect(self.open_image_left)
-        merge1 = QPushButton('Merge Mask Left')
-        merge1.clicked.connect(self.merge)
-
-        btn2 = QPushButton('Browse For Right Image')
+        btn2 = QPushButton('Browse For Background')
         btn2.clicked.connect(self.open_image_right)
-        merge2 = QPushButton('Merge Mask Right')
-        merge2.clicked.connect(self.merge)
+
+        merge = QPushButton('Merge Mask')
+        merge.clicked.connect(self.merge)
 
         left_layout.addWidget(btn1)
         left_layout.addWidget(self.photo_left)
-        left_layout.addWidget(merge1)
 
         right_layout.addWidget(btn2)
         right_layout.addWidget(self.photo_right)
-        right_layout.addWidget(merge2)
 
-        layout.addLayout(left_layout)
-        layout.addLayout(right_layout)
+        im_layout.addLayout(left_layout)
+        im_layout.addLayout(right_layout)
+
+        layout.addLayout(im_layout)
+        layout.addWidget(merge)
 
         self.setAcceptDrops(False)
         self.resize(1000, 800)
