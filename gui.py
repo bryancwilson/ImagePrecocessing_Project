@@ -95,21 +95,25 @@ class PhotoLabel(QLabel):
             self.begin, self.destination - QPoint(), QPoint()
             self.update()
 
-    def ret_crop(self):
+    def ret_mask(self):
         x1, y1 = self.begin.x(), self.begin.y()
         x2, y2 = self.destination.x(), self.destination.y()
 
-        cropped_pixmap = self.pc.copy(x1, y1, x2 - x1, y2 - y1)
+        # cropped_pixmap = self.pc.copy(x1, y1, x2 - x1, y2 - y1)
 
-        image = cropped_pixmap.toImage()
+        image = self.pc.toImage()
         bits = image.bits()
         bits.setsize(image.height() * image.width() * 4)  # 4 bytes per pixel (RGBA)
         array = np.frombuffer(bits, np.uint8).reshape((image.height(), image.width(), 4))
         
         # convert image to greyscale
-        grey_array = rgb2gray(grey_array)
+        grey_array = rgb2gray(array)
 
-        return grey_array
+        # make a mask
+        mask = np.zeros((512, 512), dtype=np.int8)
+        mask[x1:x2, y1:y2] = 1
+
+        return mask
 
 
 class Template(QWidget):
@@ -178,7 +182,7 @@ class Template(QWidget):
         self.photo_left.setPixmap(pc)
 
     def merge(self, event):
-        self.photo_left.ret_crop()
+        mask = self.photo_left.ret_mask()
         pass
 
 if __name__ == '__main__':
