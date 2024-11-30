@@ -4,6 +4,8 @@ from PyQt5 import QtGui
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from laplacian_blend import laplacian_blender
+import cv2
 
 import numpy as np
 
@@ -112,6 +114,7 @@ class PhotoLabel(QLabel):
         # make a mask
         mask = np.zeros((512, 512), dtype=np.int8)
         mask[x1:x2, y1:y2] = 1
+        mask = np.stack([mask] * 3, axis=-1)
 
         return mask
 
@@ -131,7 +134,9 @@ class Template(QWidget):
         right_layout = QVBoxLayout()
 
         self.photo_left = PhotoLabel()
+        self.photo_left_arr = None
         self.photo_right = PhotoLabel()
+        self.photo_right_arr = None
 
         # flags
         self.pic_left_exists = False
@@ -161,7 +166,6 @@ class Template(QWidget):
         self.setAcceptDrops(False)
         self.resize(1000, 800)
 
-
     def open_image_right(self, filename=None):
         if not filename:
             filename, _ = QFileDialog.getOpenFileName(self, 'Select Photo', QDir.currentPath(), 'Images (*.png *.jpg)')
@@ -171,19 +175,31 @@ class Template(QWidget):
         self.pic_right_exists = True
         self.photo_right.setPixmap(QPixmap(filename))
 
+        # Store image for blending use
+        if filename:
+            self.photo_right_arr = cv2.cvtColor(cv2.imread(filename), cv2.COLOR_BGR2RGB)
+
     def open_image_left(self, filename=None):
         if not filename:
             filename, _ = QFileDialog.getOpenFileName(self, 'Select Photo', QDir.currentPath(), 'Images (*.png *.jpg)')
             if not filename:
                 return
+        
         self.pic_left_exists = True
         pc = QPixmap(filename)
-        # pc.fill(Qt.transparent)
-
         self.photo_left.setPixmap(pc)
+
+        # Store image for blending use
+        if filename:
+            self.photo_left_arr = cv2.cvtColor(cv2.imread(filename), cv2.COLOR_BGR2RGB)
 
     def merge(self, event):
         mask = self.photo_left.ret_mask()
+
+        # Instantiate and use laplacian blender
+        blender = laplacian_blender(self.photo_left_arr, self.photo_right_arr, mask)
+        blended_image = blender.blend()
+
         pass
 
 if __name__ == '__main__':
