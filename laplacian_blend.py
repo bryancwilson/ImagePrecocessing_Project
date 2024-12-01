@@ -9,6 +9,7 @@ class laplacian_blender:
         self.target = TARGET
         self.mask = MASK
 
+    #################### PART A ####################
     def Get_2D_Gaussian_kernel(self, kernel_size,sigma):
         #Kernel_size should be an odd integer
         #sigma is the standard deviation of the Gaussian
@@ -55,17 +56,37 @@ class laplacian_blender:
         lPyr.append(gPyr[num_layers])    
 
         return gPyr, lPyr
+    
+    def gaussian_pyramid(self, IMAGE, NUMLEVELS):
+        G = IMAGE.copy()
+        gp = [G]
+        for i in range(1,NUMLEVELS):
+            G = cv2.pyrDown(G)
+            gp.append(G)
+        return gp
 
-    def blend(self):
+    def laplacian_pyramid(self, GP):
+        numLevels = len(GP)-1
+        lp  = [GP[numLevels]]
+        for i in range(numLevels,0,-1):
+            GE = cv2.pyrUp(GP[i])
+            L = cv2.subtract(GP[i-1],GE)
+            lp.append(L)
+        lp = lp[::-1]
+        return lp
+
+    #################### PART C ####################
+    def blend(self, numLevels):
+        #numLevels = numLevel-1
         # Get laplacian pyramids
-        numLevels = 6
-        _, SOURCE_LP = self.ComputePyr(self.source, 6)
-        _, TARGET_LP = self.ComputePyr(self.target, 6)
-        MASK_GP, _ = self.ComputePyr(self.mask, 6)
-
-
-        # Number of pyramid levels
-        numLevels = len(MASK_GP)
+        '''
+        _, SOURCE_LP = self.ComputePyr(self.source, numLevels)
+        _, TARGET_LP = self.ComputePyr(self.target, numLevels)
+        MASK_GP, _ = self.ComputePyr(self.mask, numLevels)
+        '''
+        SOURCE_LP = self.laplacian_pyramid(self.gaussian_pyramid(self.source,numLevels))
+        TARGET_LP = self.laplacian_pyramid(self.gaussian_pyramid(self.target,numLevels))
+        MASK_GP = self.gaussian_pyramid(self.mask,numLevels)
 
         # Create blended pyramid
         blended_pyramid = [MASK_GP[0]*SOURCE_LP[0] + (1-MASK_GP[0])*TARGET_LP[0]]

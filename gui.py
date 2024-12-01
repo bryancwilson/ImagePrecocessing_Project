@@ -6,6 +6,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from laplacian_blend import laplacian_blender
 import cv2
+import matplotlib.pyplot as plt
 
 import numpy as np
 from PIL import Image
@@ -113,7 +114,7 @@ class PhotoLabel(QLabel):
         grey_array = rgb2gray(array)
 
         # make a mask
-        mask = np.zeros((512, 512), dtype=np.int8)
+        mask = np.zeros((8, 8), dtype=np.int8)
         mask[x1:x2, y1:y2] = 1
         mask = np.stack([mask] * 3, axis=-1)
 
@@ -199,11 +200,14 @@ class Template(QWidget):
         self.photo_left_arr = cv2.cvtColor(cv2.imread(filename), cv2.COLOR_BGR2RGB)
 
     def merge(self, event):
-        mask = self.photo_left.ret_mask()
+        #mask = self.photo_left.ret_mask()
+        #mask = np.concatenate((np.ones((8,4,3)),np.zeros((8,4,3))), axis=1)
+        mask = np.concatenate((np.ones((512,256,3)),np.zeros((512,256,3))), axis=1)
 
         # Instantiate and use laplacian blender
+        num_levels = 6
         blender = laplacian_blender(self.photo_left_arr, self.photo_right_arr, mask)
-        blended_image = blender.blend()
+        blended_image = blender.blend(num_levels)
 
         im = Image.fromarray(blended_image.astype(np.uint8))
         im.save("blend.png")
