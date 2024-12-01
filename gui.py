@@ -8,6 +8,7 @@ from laplacian_blend import laplacian_blender
 import cv2
 
 import numpy as np
+from PIL import Image
 
 def rgb2gray(rgb):
     return np.dot(rgb[...,:3], [0.2989, 0.5870, 0.1140])
@@ -131,12 +132,14 @@ class Template(QWidget):
 
         # set inner vertical layouts
         left_layout = QVBoxLayout()
+        mid_layout = QVBoxLayout()
         right_layout = QVBoxLayout()
 
         self.photo_left = PhotoLabel()
         self.photo_left_arr = None
         self.photo_right = PhotoLabel()
         self.photo_right_arr = None
+        self.photo_mid = PhotoLabel()
 
         # flags
         self.pic_left_exists = False
@@ -154,10 +157,13 @@ class Template(QWidget):
         left_layout.addWidget(btn1)
         left_layout.addWidget(self.photo_left)
 
+        mid_layout.addWidget(self.photo_mid)
+
         right_layout.addWidget(btn2)
         right_layout.addWidget(self.photo_right)
 
         im_layout.addLayout(left_layout)
+        im_layout.addLayout(mid_layout)
         im_layout.addLayout(right_layout)
 
         layout.addLayout(im_layout)
@@ -175,9 +181,8 @@ class Template(QWidget):
         self.pic_right_exists = True
         self.photo_right.setPixmap(QPixmap(filename))
 
-        # Store image for blending use
-        if filename:
-            self.photo_right_arr = cv2.cvtColor(cv2.imread(filename), cv2.COLOR_BGR2RGB)
+        # Store image for blending use:
+        self.photo_right_arr = cv2.cvtColor(cv2.imread(filename), cv2.COLOR_BGR2RGB)
 
     def open_image_left(self, filename=None):
         if not filename:
@@ -190,8 +195,8 @@ class Template(QWidget):
         self.photo_left.setPixmap(pc)
 
         # Store image for blending use
-        if filename:
-            self.photo_left_arr = cv2.cvtColor(cv2.imread(filename), cv2.COLOR_BGR2RGB)
+
+        self.photo_left_arr = cv2.cvtColor(cv2.imread(filename), cv2.COLOR_BGR2RGB)
 
     def merge(self, event):
         mask = self.photo_left.ret_mask()
@@ -200,7 +205,11 @@ class Template(QWidget):
         blender = laplacian_blender(self.photo_left_arr, self.photo_right_arr, mask)
         blended_image = blender.blend()
 
-        pass
+        im = Image.fromarray(blended_image.astype(np.uint8))
+        im.save("blend.png")
+
+        pc = QPixmap('blend.png')
+        self.photo_mid.setPixmap(pc)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
