@@ -152,7 +152,7 @@ class Template(QWidget):
         btn2 = QPushButton('Browse For Background')
         btn2.clicked.connect(self.open_image_right)
 
-        merge = QPushButton('Merge Mask')
+        merge = QPushButton('Blend Images')
         merge.clicked.connect(self.merge)
 
         left_layout.addWidget(btn1)
