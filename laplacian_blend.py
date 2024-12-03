@@ -72,10 +72,10 @@ class laplacian_blender:
             blended_pyramid.append(MASK_GP[i]*SOURCE_LP[i] + (1-MASK_GP[i])*TARGET_LP[i])
         
         # Collapse the blended pyramid
-        scale = 2
+        #scale = 2
         for i in range(numLevels-1,0,-1):
             level = blended_pyramid.pop()
-            level = self.upsample(level,scale)
+            level = self.upsample(level,blended_pyramid[i-1])
             blended_pyramid[i-1] = cv2.add(blended_pyramid[i-1], level)
         blended_image = blended_pyramid[0]
         
@@ -85,8 +85,9 @@ class laplacian_blender:
         return blended_image
     
     ################ HELPER FUNCTIONS ################
-    def upsample(self, IMAGE, SCALE=2):
-        upsampled_image = cv2.resize(IMAGE, (2*IMAGE.shape[0], 2*IMAGE.shape[1]), interpolation=cv2.INTER_NEAREST)
+    def upsample(self, IMAGE, Image_of_desired_size):
+        upsampled_image = cv2.resize(IMAGE,(Image_of_desired_size.shape[1],Image_of_desired_size.shape[0]), interpolation=cv2.INTER_NEAREST)
+        #upsampled_image = cv2.resize(IMAGE, (2*IMAGE.shape[0], 2*IMAGE.shape[1]), interpolation=cv2.INTER_NEAREST)
         upsampled_image = self.conv2(upsampled_image, self.Get_2D_Gaussian_kernel(), "reflect across edge" )
         return upsampled_image
     
