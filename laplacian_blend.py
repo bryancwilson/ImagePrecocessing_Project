@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import math
 
 class laplacian_blender:
-    def __init__(self, SOURCE, TARGET, MASK):
+    def __init__(self, SOURCE=None, TARGET=None, MASK=None):
         self.source = SOURCE
         self.target = TARGET
         self.mask = MASK
@@ -61,9 +61,7 @@ class laplacian_blender:
 
     #################### PART C ####################
     def blend(self, numLevels):
-        #numLevels = numLevel-1
         # Get laplacian pyramids
-
         _, SOURCE_LP = self.ComputePyr(self.source, numLevels)
         _, TARGET_LP = self.ComputePyr(self.target, numLevels)
         MASK_GP, _ = self.ComputePyr(self.mask, numLevels)
@@ -95,6 +93,17 @@ class laplacian_blender:
     def normalize(self, INPUT, SCALE=1):
         # If input is a pyramid
         if isinstance(INPUT, list):
+            # Get absolute max and min of all levels
+            max = 1
+            min = 0
+            for level in INPUT:
+                levelMax = np.max(level)
+                levelMin = np.min(level)
+                if levelMax > max:
+                    max = levelMax
+                if levelMin < min:
+                    min = levelMin
+            # Now normalize each level
             for levelIdx, level in enumerate(INPUT):
                 # Convert to float
                 level = level.astype(float)
@@ -110,7 +119,7 @@ class laplacian_blender:
                         continue
                     # Normalize (max will always be 255)
                     else:
-                        channel = channel / 255
+                        channel = (channel - min)/(max - min)
                     # Assign channel to level
                     level[:,:,idx] = channel
                 # Assign level to pyramid
