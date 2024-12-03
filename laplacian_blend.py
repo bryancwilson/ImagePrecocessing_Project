@@ -12,7 +12,7 @@ class laplacian_blender:
     #################### PART A ####################
     def Get_2D_Gaussian_kernel(self):
         kernel_size = 5
-        sigma = np.sqrt(2)
+        sigma = 2
         #Kernel_size should be an odd integer
         #sigma is the standard deviation of the Gaussian
         # Generate 1D Gaussian kernel
