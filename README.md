@@ -37,3 +37,7 @@ A.J.'s Contribution:
     and upscaling it, smoothing it to remove nearest neighbor interpolation artifacts, and adding it 
     to layer i-1. The resulting blended image is the 0th layer of the blended pyramid. Finally,
     normalization is performed.
+
+Challenges:
+    Data type issues caused a lot of problems in the developement of the gaussian and laplacain pyramid functions as well as the blend functions. Since images are input as datatype uint8 these functions as well as functions called on such as the convolution function were designed to work for arrays with the datatype uint8. However uint8 did not provide the precision we required for this project so we had to change all these functions to be more robust an work regardless of datatype. This allowed us to use the float data type which gave us the precision we required.
+    Picking the correct way to blur posed a challenge on us as well. Deteremining what type of gaussian kernel as well as what sort of padding to use when convoluting our images with the gaussian kernel to blur them took a process of both online research as well as trial and error. 
