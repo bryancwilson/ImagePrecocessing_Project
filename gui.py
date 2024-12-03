@@ -87,7 +87,7 @@ class PhotoLabel(QLabel):
     def mouseMoveEvent(self, event):
         if event.buttons() & Qt.LeftButton:
             self.destination = event.pos()
-            print(self.destination)
+            # print(self.destination)
             self.update()
 
     def mouseReleaseEvent(self, event):
@@ -115,7 +115,7 @@ class PhotoLabel(QLabel):
 
         # make a mask
         mask = np.zeros((image.height(), image.width()), dtype=np.int8)
-        mask[x1:x2, y1:y2] = 1
+        mask[y1:y2, x1:x2] = 1
         mask = np.stack([mask] * 3, axis=-1)
 
         return mask
