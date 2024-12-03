@@ -114,7 +114,7 @@ class PhotoLabel(QLabel):
         grey_array = rgb2gray(array)
 
         # make a mask
-        mask = np.zeros((512, 512), dtype=np.int8)
+        mask = np.zeros((image.height(), image.width()), dtype=np.int8)
         mask[x1:x2, y1:y2] = 1
         mask = np.stack([mask] * 3, axis=-1)
 
