@@ -14,9 +14,14 @@ Running the GUI:
     4. Create mask by clicking and dragging over desired region of foreground image.
     5. Select the "Blend Images" button. 
 
+    Notes:
+    Only two images of the same size can be used for blending.
     
+    The number of layers in the pryamids can be changed within the merge function of gui.py.
 
-    Note: Only two images of the same size can be used for blending.
+    The size and variance of the gaussian kernel can be changed in the Get_2D_Gaussian_kernel
+    of laplacian_blend.py
+
 
 Bryan's Contribution:
     Bryan wrote the gui.py script. This script renders a user interface that interacts with the laplacian blending function, 
